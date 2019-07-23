@@ -11,8 +11,5 @@ else if keyboard_check(vk_left){
 else if keyboard_check(vk_up){
 	motion_add(image_angle, .05);
 }
-else if keyboard_check(vk_down){
-	motion_add(image_angle, -.05);
-}
 
 //move_wrap(true, true, sprite_width/2);
