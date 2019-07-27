@@ -1,0 +1,1 @@
+draw_line(x,y,parent.x, parent.y);

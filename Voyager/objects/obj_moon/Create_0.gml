@@ -1,0 +1,2 @@
+parent = obj_planet
+

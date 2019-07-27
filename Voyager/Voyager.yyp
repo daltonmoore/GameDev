@@ -63,6 +63,14 @@
             }
         },
         {
+            "Key": "179d9e69-bbf1-4361-b9e4-59408f218cd0",
+            "Value": {
+                "id": "4c45fae0-25bb-4595-a3b4-26a1d25eab30",
+                "resourcePath": "objects\\obj_planet\\obj_planet.yy",
+                "resourceType": "GMObject"
+            }
+        },
+        {
             "Key": "24303659-d3dc-4ded-a14e-d52dbcef840b",
             "Value": {
                 "id": "cc04d1e5-e411-4d63-81a8-a7a3a5f5c70e",
@@ -175,6 +183,22 @@
             }
         },
         {
+            "Key": "a9fb757d-3b1f-4c6d-a853-f011437a1af4",
+            "Value": {
+                "id": "a34d2a82-d7c5-41cd-8d3d-3c9b67ab8c9c",
+                "resourcePath": "sprites\\spr_planet\\spr_planet.yy",
+                "resourceType": "GMSprite"
+            }
+        },
+        {
+            "Key": "af98a7c8-473c-4362-8101-6df8fddb6967",
+            "Value": {
+                "id": "e9bcba7f-0676-40d4-bdbb-ef47b048fde8",
+                "resourcePath": "objects\\obj_moon\\obj_moon.yy",
+                "resourceType": "GMObject"
+            }
+        },
+        {
             "Key": "b6ce2224-3d6c-4873-906d-2241a0cbb0e0",
             "Value": {
                 "id": "6dea34e2-a06a-45fc-a493-0df9c791d371",
@@ -220,6 +244,14 @@
                 "id": "31abb5c6-9d4c-4ad6-b719-9ba6f06c233c",
                 "resourcePath": "views\\d6308d9e-94a0-441d-a2e1-c4aa1f400ea4.yy",
                 "resourceType": "GMFolder"
+            }
+        },
+        {
+            "Key": "d63c4d8b-dba1-4522-a343-75974327b24b",
+            "Value": {
+                "id": "3b673c4a-42cc-4e40-958e-60990203f09a",
+                "resourcePath": "sprites\\spr_moon\\spr_moon.yy",
+                "resourceType": "GMSprite"
             }
         },
         {
