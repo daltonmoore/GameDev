@@ -6,10 +6,11 @@ public class Player : MonoBehaviour
 {
     [SerializeField]
     float movespeed;
+    Rigidbody2D rigid;
 
     void Start()
     {
-        
+        rigid = GetComponent<Rigidbody2D>();
     }
 
     void Update()
@@ -21,19 +22,19 @@ public class Player : MonoBehaviour
     {
         if(Input.GetKey(KeyCode.D))
         {
-            transform.position = new Vector3(transform.position.x + movespeed, transform.position.y);
+            rigid.AddForce(Vector2.right * movespeed);
         }
         else if (Input.GetKey(KeyCode.A))
         {
-            transform.position = new Vector3(transform.position.x - movespeed, transform.position.y);
+            rigid.AddForce(-Vector2.right * movespeed);
         }
         else if (Input.GetKey(KeyCode.W))
         {
-            transform.position = new Vector3(transform.position.x, transform.position.y + movespeed);
+            rigid.AddForce(Vector2.up * movespeed);
         }
         else if (Input.GetKey(KeyCode.S))
         {
-            transform.position = new Vector3(transform.position.x, transform.position.y - movespeed);
+            rigid.AddForce(-Vector2.up * movespeed);
         }
     }
 }
