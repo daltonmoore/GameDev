@@ -5,7 +5,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField]
-    float movespeed;
+    float movespeed = 0;
     Rigidbody2D rigid;
 
     void Start()
@@ -36,5 +36,10 @@ public class Player : MonoBehaviour
         {
             rigid.AddForce(-Vector2.up * movespeed);
         }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        
     }
 }
