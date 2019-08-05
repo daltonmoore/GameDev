@@ -1,0 +1,2 @@
+C:\Users\dalto\Desktop\GameDev\One Rotten Egg\obj\Debug\Assembly-CSharp.csprojAssemblyReference.cache
+C:\Users\dalto\Desktop\GameDev\One Rotten Egg\obj\Debug\Assembly-CSharp.csproj.CoreCompileInputs.cache
