@@ -20,19 +20,19 @@ public class Player : MonoBehaviour
 
     void move()
     {
-        if(Input.GetKey(KeyCode.D))
+        if(Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
         {
             rigid.AddForce(Vector2.right * movespeed);
         }
-        else if (Input.GetKey(KeyCode.A))
+        else if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
         {
             rigid.AddForce(-Vector2.right * movespeed);
         }
-        else if (Input.GetKey(KeyCode.W))
+        else if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
         {
             rigid.AddForce(Vector2.up * movespeed);
         }
-        else if (Input.GetKey(KeyCode.S))
+        else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
         {
             rigid.AddForce(-Vector2.up * movespeed);
         }
@@ -40,6 +40,6 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Destroy(collision.gameObject);
+        //Destroy(collision.gameObject);
     }
 }
