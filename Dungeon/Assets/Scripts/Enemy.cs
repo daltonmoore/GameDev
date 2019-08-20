@@ -121,17 +121,17 @@ public class Enemy : MonoBehaviour
     //pursing behavior
     void beginPursuit()
     {
-        goToCell(player.transform.position);
+        lookAtPlayer(player.transform.position);
     }
 
-    void goToCell(Vector2 playerCell)
+    void lookAtPlayer(Vector2 playerCell)
     { 
         Debug.DrawLine(transform.position, playerCell);
 
         RaycastHit2D soilHit = Physics2D.Linecast(transform.position, playerCell, 1 << 8);
         RaycastHit2D playerHit = Physics2D.Linecast(transform.position, playerCell, 1);
-        print("Soil "+soilHit.distance);
-        print("Player "+playerHit.distance);
+        //print("Soil "+soilHit.distance);
+        //print("Player "+playerHit.distance);
         var ghostmode = false;
 
         if(soilHit  && soilHit.collider.gameObject.layer == 8 && soilHit.collider.gameObject.name != "blank sky" 
@@ -147,14 +147,83 @@ public class Enemy : MonoBehaviour
         }
         else
         {
-            determineDirectionToMoveTowardsPlayer(playerHit);
+            checkSurroundingTiles();
+            //moveNormalTowardsPlayer(dir);
+        }
+    }
+    
+    void checkSurroundingTiles()
+    {
+        //Vector2 frontVector = transform.position - front.transform.position;
+        //Vector2 towardsPlayerVector = (Vector2)transform.position - playerHit.point;
+        //var angleFromFrontVectorToPlayer = Vector2.SignedAngle(frontVector, towardsPlayerVector);
+        //print(angleFromFrontVectorToPlayer);
+        var eastVector = new Vector2(90, 0);
+        Debug.DrawLine(transform.position, eastVector, Color.red);
+        RaycastHit2D eastHit = Physics2D.Linecast(transform.position, eastVector);
+        var eastTile = tilemap.GetTile(grid.WorldToCell(eastHit.point));
+        var eastAdjTileName = eastTile != null ? eastTile.name : "empty";
+        var distToEastAdjCell = Vector3.Distance( grid.WorldToCell(transform.position), grid.WorldToCell(eastHit.point));
+        if( eastAdjTileName.Equals("first layer soil") && distToEastAdjCell == 1)
+        {
+            print("Can't go east!");
+        }
+
+        var southVector = new Vector2(0, -90);
+        Debug.DrawLine(transform.position, southVector, Color.blue);
+        RaycastHit2D southHit = Physics2D.Linecast(transform.position, southVector);
+        var southTile = tilemap.GetTile(grid.WorldToCell(southHit.point));
+        var southAdjTileName = southTile != null ? southTile.name : "empty";
+        var distToSouthAdjCell = Vector3.Distance(grid.WorldToCell(transform.position), grid.WorldToCell(southHit.point));
+        if(southAdjTileName.Equals("first layer soil") && distToSouthAdjCell == 1)
+        {
+            print("Can't go south!");
+        }
+
+        var westVector = new Vector2(-90, 0);
+        Debug.DrawLine(transform.position, westVector, Color.green);
+        RaycastHit2D westHit = Physics2D.Linecast(transform.position, westVector);
+        var westTile = tilemap.GetTile(grid.WorldToCell(westHit.point));
+        var westAdjTileName = westTile != null ? westTile.name : "empty";
+        var distToWestAdjCell = Vector3.Distance(grid.WorldToCell(transform.position), grid.WorldToCell(westHit.point));
+        if (westAdjTileName.Equals("first layer soil") && distToWestAdjCell == 1)
+        {
+            print("Can't go west!");
+        }
+
+        var northVector = new Vector2(0, 90);
+        Debug.DrawLine(transform.position, northVector, Color.grey);
+        RaycastHit2D northHit = Physics2D.Linecast(transform.position, northVector);
+        var northTile = tilemap.GetTile(grid.WorldToCell(northHit.point));
+        var northAdjTileName = northTile != null ? northTile.name : "empty";
+        var distToNorthAdjCell = Vector3.Distance(grid.WorldToCell(transform.position), grid.WorldToCell(northHit.point));
+        if (northAdjTileName.Equals("first layer soil") && distToNorthAdjCell == 1)
+        {
+            print("Can't go north!");
         }
     }
 
-    void determineDirectionToMoveTowardsPlayer(RaycastHit2D hit)
+
+    bool moving = false;
+    void moveNormalTowardsPlayer(float direction)
     {
-        Vector2 frontVector = transform.position - front.transform.position;
-        Vector2 towardsPlayerVector = (Vector2)transform.position - hit.point;
-        print("Angle: "+Vector2.Angle(frontVector, towardsPlayerVector));
+        if (direction == 0)//move east
+        {
+            Vector3Int adjRightCell = grid.WorldToCell(transform.position + new Vector3(.64f, 0));
+            transform.position = Vector2.Lerp(transform.position, grid.CellToWorld(adjRightCell), .01f);
+        }
+        else if (direction == 1)//move north
+        {
+
+        }
+        else if (direction == 2)//move west
+        {
+
+        }
+        else if (direction == 3)//move south
+        {
+            Vector3Int adjSouthCell = grid.WorldToCell(transform.position + new Vector3(0, -.64f));
+            transform.position = Vector2.Lerp(transform.position, grid.CellToWorld(adjSouthCell), .01f);
+        }
     }
 }
