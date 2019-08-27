@@ -25,8 +25,8 @@ public class Board : MonoBehaviour
         grid = GameObject.Find("Grid").GetComponent<Grid>();
         tilemap = grid.GetComponentInChildren<Tilemap>();
         player = GameObject.Find("Player");
-        northPoint = player.transform.GetChild(0);
-        eastPoint = player.transform.GetChild(1);
+        northPoint = player.transform.GetChild(1);
+        eastPoint = player.transform.GetChild(4);
         southPoint = player.transform.GetChild(2);
         westPoint = player.transform.GetChild(3);
     }
