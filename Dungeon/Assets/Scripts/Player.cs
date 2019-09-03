@@ -7,6 +7,7 @@ public class Player : MonoBehaviour
 {
     [SerializeField]
     float movespeed = 0;
+    bool pumping = false;
     Rigidbody2D rigid;
     Grid grid;
     Tilemap tileMap;
@@ -77,6 +78,7 @@ public class Player : MonoBehaviour
     void Pump()
     {
         CheckFacedTile();
+        if (pumping) inflate();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -89,28 +91,19 @@ public class Player : MonoBehaviour
         foreach (var item in enemies)
         {
             var enemyCollider = item.GetComponent<BoxCollider2D>();
-            if (frontTrigger.IsTouching(enemyCollider))
+            var enemy = item.GetComponent<Enemy>();
+            if (frontTrigger.IsTouching(enemyCollider) && !pumping)
             {
-                Destroy(enemyCollider.gameObject);
+                
+                //pumping = true;
+                enemy.HitWithPump();
+                break;
             }
         }
     }
 
-    int GetFacingDir()
+    void inflate()
     {
-        var z = (int)transform.localEulerAngles.z;
-        switch (z)
-        {
-            case 90://North
-                return 1;
-            case 0://East
-                return 0;
-            case 180://West
-                return 2;
-            case 270://South
-                return 3;
-            default:
-                return -1;
-        }
+
     }
 }

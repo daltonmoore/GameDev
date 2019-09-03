@@ -16,6 +16,7 @@ public class Enemy : MonoBehaviour
     float forceDirection = 1, moveForce = 2, maxVelocity = .5f;
     enum Behaviour {idling, becomeGhost, ghostingToCell, becomeNormal, pursuing, fleeing};
     Behaviour currentState = Behaviour.pursuing;
+    public bool canMoveEast, canMoveNorth, canMoveWest, canMoveSouth;
     bool moveHorizontally = true, moving = false;
     Vector3 playerPos;
     int moveCounter = 0;
@@ -43,6 +44,11 @@ public class Enemy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (stunned)
+        {
+            stunCD -= Time.deltaTime;
+            return;
+        }
         switch (currentState)
         {
             case Behaviour.idling:
@@ -159,7 +165,6 @@ public class Enemy : MonoBehaviour
         currentState = Behaviour.pursuing;
     }
 
-    public bool canMoveEast, canMoveNorth, canMoveWest, canMoveSouth;
     void pursue()
     {
         checkSurroundingTiles();
@@ -191,6 +196,7 @@ public class Enemy : MonoBehaviour
                 /*west*/ new Vector3(-.51f, 0),
                 /*south*/ new Vector3(0, -.51f)
         };
+
         bool[] canMoves = new bool[4];
 
         int i = 0;
@@ -284,6 +290,29 @@ public class Enemy : MonoBehaviour
         else if (dir == 3 && canMoveNorth) return 1;
         
         else return -1;
+    }
+
+    public void HitWithPump()
+    {
+        inflating();
+    }
+
+    void inflating()
+    {
+        stunCD = 2;
+        StartCoroutine(StunTimeout());
+        if (!stunned)
+        {
+            stunned = true; 
+        }
+    }
+    public bool stunned = false;
+    public float stunCD = 0;
+    IEnumerator StunTimeout()
+    {
+        yield return new WaitForSeconds(2);
+        if(stunCD <= 0)
+            stunned = false;
     }
 
     bool isSoil(string tileName)
