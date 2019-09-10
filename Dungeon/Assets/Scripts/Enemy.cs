@@ -13,17 +13,23 @@ public class Enemy : MonoBehaviour
     Sprite ghostSprite, normalSprite;
     BoxCollider2D front, back, top, bottom, body;
     GameObject player;
+    SpriteRenderer spriteRenderer;
     float forceDirection = 1, moveForce = 2, maxVelocity = .5f;
-    enum Behaviour {idling, becomeGhost, ghostingToCell, becomeNormal, pursuing, fleeing};
-    Behaviour currentState = Behaviour.pursuing;
-    public bool canMoveEast, canMoveNorth, canMoveWest, canMoveSouth;
+    public enum Behaviour {idling, becomeGhost, ghostingToCell, becomeNormal, pursuing, fleeing};
+    public Behaviour currentState = Behaviour.pursuing;
+    public float stunCD = 0;
+    public bool stunned = false;
+    bool canMoveEast, canMoveNorth, canMoveWest, canMoveSouth;
     bool moveHorizontally = true, moving = false;
     Vector3 playerPos;
     int moveCounter = 0;
+    public Animator anim;
 
     // Start is called before the first frame update
     void Start()
     {
+        anim = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         if (tag == "Scuba")
         {
             ghostSprite = Resources.Load<Sprite>("Sprites/Enemies/Scuba Guy Ghost");
@@ -44,6 +50,7 @@ public class Enemy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        spriteRenderer.sprite = ghostSprite;
         if (stunned)
         {
             stunCD -= Time.deltaTime;
@@ -143,14 +150,14 @@ public class Enemy : MonoBehaviour
     void becomeGhost()
     {
         body.isTrigger = true;
-        GetComponent<SpriteRenderer>().sprite = ghostSprite;
+        spriteRenderer.sprite = ghostSprite;
         playerPos = player.transform.position;
         currentState = Behaviour.ghostingToCell;
     }
 
     void ghostingToLastPlayerPos()
     {
-        transform.position = Vector2.MoveTowards(transform.position, playerPos, .0075f);
+        transform.position = Vector2.MoveTowards(transform.position, playerPos, .01f);
         if (transform.position == playerPos)
         {
             playerPos = Vector3.zero;
@@ -161,7 +168,7 @@ public class Enemy : MonoBehaviour
     void becomeNormal()
     {
         body.isTrigger = false;
-        GetComponent<SpriteRenderer>().sprite = normalSprite;
+        spriteRenderer.sprite = normalSprite;
         currentState = Behaviour.pursuing;
     }
 
@@ -303,16 +310,19 @@ public class Enemy : MonoBehaviour
         StartCoroutine(StunTimeout());
         if (!stunned)
         {
-            stunned = true; 
+            stunned = true;
+            anim.SetBool("Inflating", true);
         }
     }
-    public bool stunned = false;
-    public float stunCD = 0;
+    
     IEnumerator StunTimeout()
     {
         yield return new WaitForSeconds(2);
-        if(stunCD <= 0)
+        if (stunCD <= 0)
+        {
             stunned = false;
+            anim.SetBool("Inflating", false);
+        }
     }
 
     bool isSoil(string tileName)

@@ -6,14 +6,18 @@ using UnityEngine.Tilemaps;
 public class Player : MonoBehaviour
 {
     [SerializeField]
-    float movespeed = 0;
-    bool pumping = false;
+    float movespeed = 0, lastPumpTime = 0, lives = 3;
+    public bool inflating = false, moving = false, dead= false;
+    Enemy currentTarget;
     Rigidbody2D rigid;
     Grid grid;
     Tilemap tileMap;
-    SpriteRenderer spriteRenderer;
+    public SpriteRenderer spriteRenderer;
     BoxCollider2D frontTrigger;
     List<GameObject> enemies = new List<GameObject>();
+    Animator anim;
+    public AudioSource audioSource;
+    public AudioClip deathSound;
     Vector3[] cellOffsets =
     { 
             /*east*/ new Vector3(.51f,0),
@@ -24,6 +28,9 @@ public class Player : MonoBehaviour
 
     void Start()
     {
+        audioSource = GetComponent<AudioSource>();
+        deathSound = Resources.Load<AudioClip>("Sound/Death");
+        anim = GetComponent<Animator>();
         rigid = GetComponent<Rigidbody2D>();
         grid = GameObject.Find("Grid").GetComponent<Grid>();
         tileMap = GameObject.Find("Tilemap").GetComponent<Tilemap>();
@@ -37,14 +44,31 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space)) Pump();
-        else Move();
+        if (dead)
+            return;
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            anim.SetBool("Pumping", true);
+            Pump();
+        }
+        else
+        {
+            Move();
+        }
     }
 
     void Move()
     {
-        
-        if(Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
+        float horz = Input.GetAxis("Horizontal");
+        float vert = Input.GetAxis("Vertical");
+
+        if (vert != 0 || horz != 0)
+        {
+            anim.SetBool("Pumping", false);
+            anim.SetBool("Moving", true);
+        }
+
+        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
         {
             rigid.AddForce(Vector2.right * movespeed);
             transform.localEulerAngles = new Vector3Int(0, 0, 0);
@@ -72,38 +96,49 @@ public class Player : MonoBehaviour
         {
             var temp = grid.WorldToCell(transform.position);
             transform.position = temp + new Vector3(.5f, .5f);
+            anim.SetBool("Moving", false);
         }
     }
 
     void Pump()
     {
         CheckFacedTile();
-        if (pumping) inflate();
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        //Destroy(collision.gameObject);
     }
 
     void CheckFacedTile()
     {
         foreach (var item in enemies)
         {
+            if (item == null)
+                continue;
             var enemyCollider = item.GetComponent<BoxCollider2D>();
             var enemy = item.GetComponent<Enemy>();
-            if (frontTrigger.IsTouching(enemyCollider) && !pumping)
+            if (frontTrigger.IsTouching(enemyCollider))
             {
-                
-                //pumping = true;
+                currentTarget = enemy;
+                lastPumpTime = Time.time;
+                inflating = true;
+                currentTarget.anim.SetBool("Inflating", inflating);
                 enemy.HitWithPump();
+                StartCoroutine(PumpReset());
                 break;
             }
         }
     }
 
-    void inflate()
+    IEnumerator PumpReset()
     {
-
+        yield return new WaitForSeconds(.2f);
+        if (Time.time - lastPumpTime > .1f)
+        {
+            inflating = false;
+            anim.SetBool("Pumping", false);
+        }
+        else
+        {
+            inflating = true;
+        }
+        if(currentTarget != null)
+            currentTarget.anim.SetBool("Inflating",inflating);
     }
 }
