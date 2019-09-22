@@ -53,12 +53,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\DeathTrigger.cs" />
-     <Compile Include="Assets\Kill.cs" />
-     <Compile Include="Assets\Moving.cs" />
+     <Compile Include="Assets\GetPickup.cs" />
      <Compile Include="Assets\Scripts\Board.cs" />
+     <Compile Include="Assets\Scripts\DeathTrigger.cs" />
      <Compile Include="Assets\Scripts\Enemy.cs" />
+     <Compile Include="Assets\Scripts\GameManager.cs" />
+     <Compile Include="Assets\Scripts\Kill.cs" />
      <Compile Include="Assets\Scripts\MainMenu.cs" />
+     <Compile Include="Assets\Scripts\Moving.cs" />
      <Compile Include="Assets\Scripts\Player.cs" />
  <Reference Include="Unity.Timeline.Editor">
  <HintPath>C:/Users/Dalton/Desktop/GameDev/Dungeon/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>

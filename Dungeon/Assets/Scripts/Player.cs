@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
     [SerializeField]
-    float movespeed = 0, lastPumpTime = 0, lives = 3;
+    float movespeed = 0, lastPumpTime = 0;
     public bool inflating = false, moving = false, dead= false;
     Enemy currentTarget;
     Rigidbody2D rigid;
@@ -29,6 +30,7 @@ public class Player : MonoBehaviour
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
+        audioSource.loop = true;
         deathSound = Resources.Load<AudioClip>("Sound/Death");
         anim = GetComponent<Animator>();
         rigid = GetComponent<Rigidbody2D>();
@@ -45,7 +47,7 @@ public class Player : MonoBehaviour
     void Update()
     {
         if (dead)
-            return;
+        { return;}
         if (Input.GetKeyDown(KeyCode.Space))
         {
             anim.SetBool("Pumping", true);
@@ -68,29 +70,34 @@ public class Player : MonoBehaviour
             anim.SetBool("Moving", true);
         }
 
-        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
+        if (vert != 0)
         {
-            rigid.AddForce(Vector2.right * movespeed);
-            transform.localEulerAngles = new Vector3Int(0, 0, 0);
-            spriteRenderer.flipY = false;
+            rigid.AddForce(Vector2.up * movespeed * Time.deltaTime * vert);
+            if (vert > 0)
+            {
+
+                transform.localEulerAngles = new Vector3Int(0, 0, 90);
+                spriteRenderer.flipY = false;
+            }
+            else
+            {
+                transform.localEulerAngles = new Vector3Int(0, -180, -90);
+                spriteRenderer.flipY = false;
+            }
         }
-        else if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
+        else if (horz != 0)
         {
-            rigid.AddForce(-Vector2.right * movespeed);
-            transform.localEulerAngles = new Vector3Int(0, 0, 180);
-            spriteRenderer.flipY = true;
-        }
-        else if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
-        {
-            rigid.AddForce(Vector2.up * movespeed);
-            transform.localEulerAngles = new Vector3Int(0, 0, 90);
-            spriteRenderer.flipY = false;
-        }
-        else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
-        {
-            rigid.AddForce(-Vector2.up * movespeed);
-            transform.localEulerAngles = new Vector3Int(0, -180, -90);
-            spriteRenderer.flipY = false;
+            rigid.AddForce(Vector2.right * movespeed * Time.deltaTime * horz);
+            if (horz > 0)
+            {
+                transform.localEulerAngles = new Vector3Int(0, 0, 0);
+                spriteRenderer.flipY = false;
+            }
+            else
+            {
+                transform.localEulerAngles = new Vector3Int(0, 0, 180);
+                spriteRenderer.flipY = true;
+            }
         }
         else
         {

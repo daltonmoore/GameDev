@@ -27,7 +27,7 @@ public class Enemy : MonoBehaviour
 
     // Start is called before the first frame update
     void Start()
-    {
+    { 
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         if (tag == "Scuba")
@@ -50,7 +50,6 @@ public class Enemy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        spriteRenderer.sprite = ghostSprite;
         if (stunned)
         {
             stunCD -= Time.deltaTime;
@@ -269,7 +268,7 @@ public class Enemy : MonoBehaviour
             if (Vector3.Distance(transform.position, targetLoc) < .01f)
             {
                 moving = false;
-                if(moveCounter > 10)
+                if(moveCounter > 10 * Random.Range(1,1000))
                 {
                     moveCounter = 0;
                     currentState = Behaviour.becomeGhost;
