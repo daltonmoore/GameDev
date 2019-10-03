@@ -8,27 +8,64 @@ public class GameManager : MonoBehaviour
 {
     public int playerLives = 3;
     Player player;
-    GameObject canvas;
+    GameObject canvas, winui, liveslabel, mainmenuui, gameOver, end;
     public bool[] message = new bool[7];
     public bool[] enemiesDead = new bool[7];
     AudioSource audioSource;
-    AudioClip enemyDeathSound;
+    AudioClip enemyDeathSound, titleMusic;
     int msgCount;
+    Button yes, no, exit, exitMain, playAgain;
+
+    void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();
+        audioSource.loop = true;
+        enemyDeathSound = Resources.Load<AudioClip>("Sound/Kill Enemy");
+        titleMusic = Resources.Load<AudioClip>("Sound/title");
+        audioSource.clip = titleMusic;
+    }
 
     void Start()
     {
         DontDestroyOnLoad(this);
         canvas = GameObject.Find("Canvas");
+
         DontDestroyOnLoad(GameObject.Find("EventSystem"));
         DontDestroyOnLoad(canvas);
-        canvas.transform.GetChild(0).gameObject.SetActive(false); // turn off lives label
-        enemyDeathSound = Resources.Load<AudioClip>("Sound/Kill Enemy");
-        audioSource = GetComponent<AudioSource>();
-        audioSource.clip = enemyDeathSound;
+
+        yes = GameObject.Find("Yes Button").GetComponent<Button>();
+        yes.onClick.AddListener(ClickYesButton);
+
+        no = GameObject.Find("No Button").GetComponent<Button>();
+        no.onClick.AddListener(ClickNoButton);
+
+        exit = GameObject.Find("ExitButton").GetComponent<Button>();
+        exit.onClick.AddListener(ClickExitButton);
+
+        exitMain = GameObject.Find("ExitButtonMain").GetComponent<Button>();
+        exitMain.onClick.AddListener(ClickExitButton);
+
+        playAgain = GameObject.Find("PlayAgainButton").GetComponent<Button>();
+        playAgain.onClick.AddListener(ClickPlayAgainButton);
+
+        liveslabel = canvas.transform.GetChild(0).gameObject;
+        liveslabel.SetActive(false); // turn off lives label
+
+        winui = canvas.transform.GetChild(3).gameObject;
+        winui.SetActive(false);
+
+        mainmenuui = canvas.transform.GetChild(1).gameObject;
+
+        end = canvas.transform.GetChild(4).gameObject;
+        end.SetActive(false);
+
+        gameOver = canvas.transform.GetChild(2).gameObject;
+        gameOver.SetActive(false);
     }
 
     void Update()
     {
+        var currentScene = SceneManager.GetActiveScene().name;
         for (int i = 0; i < message.Length; i++)
         {
             if (!message[i])
@@ -42,7 +79,8 @@ public class GameManager : MonoBehaviour
         }
         if(msgCount == 7)
         {
-            print("you win");
+            SceneManager.LoadScene("Win");
+            message = new bool[7];
         }
         msgCount = 0;
 
@@ -54,14 +92,22 @@ public class GameManager : MonoBehaviour
                 enemiesDead[i] = false;
             }
         }
-        if (player == null && SceneManager.GetActiveScene().name == "Start")
+        if (player == null && currentScene == "Start")
         {
-            print("Grabbed Player");
+            audioSource.clip = enemyDeathSound;
+            audioSource.loop = false;
             player = GameObject.Find("Player").GetComponent<Player>();
-            canvas.transform.GetChild(1).gameObject.SetActive(false); // turn off play button
-            canvas.transform.GetChild(0).gameObject.SetActive(true); // turn on lives label
+            mainmenuui.SetActive(false); // turn off play button
+            liveslabel.SetActive(true); // turn on lives label
         }
-        else if (player != null)
+        if(currentScene != "Start" && audioSource.clip == enemyDeathSound)
+        {
+            audioSource.clip = titleMusic;
+            audioSource.loop = true;
+            audioSource.Play();
+        }
+
+        if (player != null)
         {
             if (player.dead)
             {
@@ -72,7 +118,7 @@ public class GameManager : MonoBehaviour
                         SceneManager.LoadScene("Start");
 
                         playerLives--;
-                        canvas.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = ""+playerLives;
+                        liveslabel.transform.GetChild(0).GetComponent<Text>().text = ""+playerLives;
                         player = null;
                     }
 
@@ -89,8 +135,49 @@ public class GameManager : MonoBehaviour
 
         if(SceneManager.GetActiveScene().name == "Gameover")
         {
-            canvas.transform.GetChild(0).gameObject.SetActive(false); // turn off lives label
-            canvas.transform.GetChild(2).gameObject.SetActive(true); // turn on gameover message and button
+            liveslabel.gameObject.SetActive(false); // turn off lives label
+            gameOver.SetActive(true);
         }
+
+        if(SceneManager.GetActiveScene().name == "Win")
+        {
+            winui.SetActive(true); // turn on win ui
+        }
+    }
+
+    void ClickPlayAgainButton()
+    {
+        Application.Quit();
+    }
+
+    void ClickExitButton()
+    {
+        Application.Quit();
+    }
+
+    void ClickYesButton()
+    {
+        winui.SetActive(false); ; // turn off win ui
+        liveslabel.SetActive(false); // turn off lives label
+        StartCoroutine(Wait("SheSaidYes"));
+    }
+
+    void ClickNoButton()
+    {
+        winui.SetActive(false); ; // turn off win ui
+        liveslabel.SetActive(false); // turn off lives label
+        StartCoroutine(Wait("SheSaidNo"));
+        end.SetActive(true);
+
+        audioSource.Pause();
+    }
+
+    IEnumerator Wait(string scene)
+    {
+        yield return new WaitForSeconds(.5f);
+        winui.SetActive(false); ; // turn off win ui
+        liveslabel.SetActive(false); // turn off lives label
+        SceneManager.LoadScene(scene);
+        end.SetActive(true);
     }
 }

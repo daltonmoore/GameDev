@@ -14,7 +14,7 @@ public class Enemy : MonoBehaviour
     BoxCollider2D front, back, top, bottom, body;
     GameObject player;
     SpriteRenderer spriteRenderer;
-    float forceDirection = 1, moveForce = 2, maxVelocity = .5f;
+    public float forceDirection = 1, moveForce = 10f, maxVelocity = .5f;
     public enum Behaviour {idling, becomeGhost, ghostingToCell, becomeNormal, pursuing, fleeing};
     public Behaviour currentState = Behaviour.pursuing;
     public float stunCD = 0;
@@ -124,7 +124,7 @@ public class Enemy : MonoBehaviour
 
         if (rb.velocity.x < maxVelocity)
         {
-            rb.AddForce(new Vector2(moveForce * forceDirection, 0));
+            rb.AddForce(new Vector2(moveForce * forceDirection * Time.deltaTime, 0));
         }
     }
 
@@ -141,7 +141,7 @@ public class Enemy : MonoBehaviour
 
         if(rb.velocity.y < maxVelocity)
         {
-            rb.AddForce(new Vector2(0, moveForce * forceDirection));
+            rb.AddForce(new Vector2(0, moveForce * forceDirection * Time.deltaTime));
         }
     }
 
@@ -156,7 +156,7 @@ public class Enemy : MonoBehaviour
 
     void ghostingToLastPlayerPos()
     {
-        transform.position = Vector2.MoveTowards(transform.position, playerPos, .01f);
+        transform.position = Vector2.MoveTowards(transform.position, playerPos, moveForce* Time.deltaTime);
         if (transform.position == playerPos)
         {
             playerPos = Vector3.zero;
@@ -228,6 +228,7 @@ public class Enemy : MonoBehaviour
     public int dir;
     Vector3 targetLoc;
     Vector3 cellToWorldOffset = new Vector3(.5f, .5f);
+ 
     void move()
     {
         //print("moving = "+moving);
@@ -262,7 +263,10 @@ public class Enemy : MonoBehaviour
         {
             //print("Target Loc = " + targetLoc);
             //print("Distance to target loc = " + Vector3.Distance(transform.position, targetLoc));
-            transform.position = Vector3.MoveTowards(transform.position, targetLoc, .01f);
+            if (rb.velocity.x < maxVelocity)
+            {
+                transform.position = Vector3.MoveTowards(transform.position, targetLoc, moveForce * Time.deltaTime);
+            }
 
             //done moving
             if (Vector3.Distance(transform.position, targetLoc) < .01f)
@@ -275,6 +279,7 @@ public class Enemy : MonoBehaviour
                 }
             }
         }
+
     }
 
     //utility

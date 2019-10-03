@@ -17,4 +17,16 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Gameover.unity
     guid: 59e7432366e4c304a9310e08526c3ef3
+  - enabled: 1
+    path: Assets/Scenes/Win.unity
+    guid: 27359f3f826a9894ca6da0d92359c84b
+  - enabled: 1
+    path: Assets/Scenes/SheSaidNo.unity
+    guid: 3e0858cd913e0bd4fb18796b47b26554
+  - enabled: 1
+    path: Assets/Scenes/SheSaidYes.unity
+    guid: 0917d6d8e8df9044e862ab9af3277e9d
+  - enabled: 1
+    path: Assets/Scenes/MainMenuCopy.unity
+    guid: 0081989f885580a4aa732d50668a5a47
   m_configObjects: {}

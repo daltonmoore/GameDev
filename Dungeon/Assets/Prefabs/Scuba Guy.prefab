@@ -158,6 +158,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38ff17f734e7df54fa668312d5dec90f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  forceDirection: 1
+  moveForce: 2.03
+  maxVelocity: 0.5
   currentState: 4
   stunCD: 0
   stunned: 0
