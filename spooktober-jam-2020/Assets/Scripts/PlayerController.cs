@@ -30,6 +30,11 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         Movement();
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            DialogueHelper.NPCDialogueInitiated();
+        }
     }
 
     void Movement()

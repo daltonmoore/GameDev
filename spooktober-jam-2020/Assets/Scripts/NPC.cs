@@ -9,6 +9,16 @@ public class NPC : MonoBehaviour
         if (collision.tag == "Player")
         {
             DialogueHelper.NPCDialogueTriggerFired(gameObject);
+            Debug.Log("Player Inside Dialogue Trigger");
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.tag == "Player")
+        {
+            DialogueHelper.NPCDialogueTriggerLeft(gameObject);
+            Debug.Log("Player Left Dialogue Trigger");
         }
     }
 }
