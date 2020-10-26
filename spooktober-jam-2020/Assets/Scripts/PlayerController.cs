@@ -33,6 +33,7 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.E))
         {
+            rigidbody2D.velocity = new Vector2(0,0);
             DialogueHelper.NPCDialogueInitiated();
         }
     }

@@ -1,17 +1,19 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.PackageManager;
 using UnityEngine;
 
 public static class DialogueHelper
 {
-    static GameObject CurrentNPC;
-    static bool PlayerIsAbleToOpenDialogue;
-    static bool PlayerHasInitiatedDialogue;
+    public static event EventHandler PlayerOpenDialogueToolTipShown;
+    public static event EventHandler<DialogueEventArgs> PlayerInitiatedDialogue;
+    public static event EventHandler PlayerHasLeft;
+    public static GameObject CurrentNPC { get; set; }
+    public static bool PlayerIsAbleToOpenDialogue { get; set; }
 
     // invoked by NPCs
     #region NPCInvocations
-
     
     public static void NPCDialogueTriggerFired(GameObject source)
     {
@@ -19,6 +21,7 @@ public static class DialogueHelper
         {
             CurrentNPC = source;
             PlayerIsAbleToOpenDialogue = true;
+            PlayerOpenDialogueToolTipShown.Invoke(source, new EventArgs());
         }
     }
 
@@ -28,6 +31,7 @@ public static class DialogueHelper
         {
             CurrentNPC = null;
             PlayerIsAbleToOpenDialogue = false;
+            PlayerHasLeft.Invoke(source, new EventArgs());
         }
     }
 
@@ -40,33 +44,17 @@ public static class DialogueHelper
     {
         if (PlayerIsAbleToOpenDialogue)
         {
-            PlayerHasInitiatedDialogue = true;
+            DialogueEventArgs args = new DialogueEventArgs();
+            args.CurrentNPC = CurrentNPC;
+            PlayerInitiatedDialogue.Invoke(CurrentNPC, args);
         }
     }
-
 
     #endregion
 
-    public static bool GetPlayerHasInitiatedDialogue()
-    {
-        return PlayerHasInitiatedDialogue;
-    }
+}
 
-    public static GameObject GetCurrentNPC()
-    {
-        return CurrentNPC;
-    }
-
-    public static void SetPlayerHasIntiatedDialogue(object sender, bool value)
-    {
-        if (sender is DialogueManager)
-        {
-            PlayerHasInitiatedDialogue = value;
-        }
-        else
-        {
-            throw new System.Exception("Only Dialogue Manager Can Set Values Within The Dialogue Helper");
-        }
-    }
-
+public class DialogueEventArgs : EventArgs
+{
+    public GameObject CurrentNPC;
 }

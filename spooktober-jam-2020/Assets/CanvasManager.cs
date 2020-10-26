@@ -1,37 +1,100 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class CanvasManager : MonoBehaviour
 {
-    public CanvasManager canvasManager { get { return this; } }
+    public event EventHandler AdvanceDialogue;
 
-    const string OpenDialogueGameObjectName = "Text - OpenDialogue";
+    #region Children
+    const string OpenDialogueText = "Text - OpenDialogue";
+    const string DialogueBox = "Img - DialogueBox";
+    const string DialogueBoxText = "Text - DialogueText";
+    #endregion
 
-    Dictionary<string, Text> textChildren = new Dictionary<string, Text>();
-    DialogueManager dialogueManager;
+    Dictionary<string, GameObject> children = new Dictionary<string, GameObject>();
 
     private void Start()
     {
-        Text[] childrenWithText = GetComponentsInChildren<Text>();
-        foreach (Text child in childrenWithText)
+        foreach (Transform child in transform)
         {
-            textChildren.Add(child.gameObject.name, child);
+            children.Add(child.gameObject.name, child.gameObject);
+            child.gameObject.SetActive(false);
         }
 
-        dialogueManager = GameObject.Find("DialogueManager").GetComponent<DialogueManager>();
-
-        dialogueManager.StartDialogue += DialogueManager_StartDialogue;
+        // subscribing to events
+        DialogueHelper.PlayerOpenDialogueToolTipShown += DialogueHelper_PlayerOpenDialogueToolTipShown;
+        DialogueHelper.PlayerInitiatedDialogue += DialogueManager_StartDialogue;
+        DialogueHelper.PlayerHasLeft += DialogueHelper_PlayerHasLeft;
     }
 
-    private void DialogueManager_StartDialogue(object sender, StartDialogueEventArgs e)
+    private void DialogueHelper_PlayerHasLeft(object sender, EventArgs e)
     {
-        Text text; 
-        textChildren.TryGetValue(OpenDialogueGameObjectName, out text);
-        text.gameObject.SetActive(false);
-
-        Debug.Log(text.gameObject.name);
-        Debug.Log(sender);
+        SetChildActive(false, OpenDialogueText);
+        SetChildActive(false, DialogueBox);
     }
+
+    private void DialogueHelper_PlayerOpenDialogueToolTipShown(object sender, EventArgs e)
+    {
+        SetChildActive(true, OpenDialogueText);
+    }
+
+    private void DialogueManager_StartDialogue(object sender, EventArgs e)
+    {
+        // turns off tool-tip for opening dialogue
+        SetChildActive(false, OpenDialogueText);
+
+        // open dialogue popup window
+        SetChildActive(true, DialogueBox);
+    }
+
+    public void OnClickLeaveDialogueButton()
+    {
+        SetChildActive(false, DialogueBox);
+    }
+
+    public void OnClickAdvanceDialogueButton()
+    {
+        AdvanceDialogue.Invoke(this, new EventArgs());
+    }
+
+    public void SetDialogueBoxText(string text)
+    {
+        GameObject gameObject = null;
+        if (children.TryGetValue(DialogueBoxText, out gameObject))
+        {
+            gameObject.GetComponent<Text>().text = text;
+        }
+        else
+        {
+            GameObject dialoguebox = GetChild(DialogueBox);
+            Text dialoguetext = dialoguebox.GetComponentInChildren<Text>();
+            children.Add(DialogueBoxText, dialoguetext.gameObject);
+            dialoguetext.text = text;
+        }
+    }
+
+    public void CloseDialogueBox()
+    {
+        SetChildActive(false, DialogueBox);
+    }
+
+    #region HelperMethods
+
+    void SetChildActive(bool active, string name)
+    {
+        GameObject child = GetChild(name);
+        child.SetActive(active);
+    }
+
+    GameObject GetChild(string name)
+    {
+        GameObject child;
+        children.TryGetValue(name, out child);
+        return child;
+    }
+
+    #endregion
 }
